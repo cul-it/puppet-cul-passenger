@@ -11,11 +11,12 @@
 # Sample Usage:
 #
 class passenger::params {
-  $package_ensure     = '4.0.42'
-  $passenger_version  = '4.0.42'
+  $package_ensure     = '3.0.21'
+  $passenger_version  = '3.0.21'
   $passenger_ruby     = '/usr/bin/ruby'
   $package_provider   = 'gem'
   $passenger_provider = 'gem'
+  $compile_passenger  = true
 
   if versioncmp ($passenger_version, '4.0.0') > 0 {
     $builddir     = 'buildout'
@@ -40,7 +41,11 @@ class passenger::params {
       }
     }
     'redhat': {
-      $package_dependencies   = [ 'libcurl-devel', 'openssl-devel', 'zlib-devel' ]
+      case $::lsbmajdistrelease {
+        '5'     : { $curl_package = 'curl-devel' }
+        default : { $curl_package = 'libcurl-devel' }
+      }
+      $package_dependencies   = [ $curl_package, 'openssl-devel', 'zlib-devel' ]
       $package_name           = 'passenger'
       $passenger_package      = 'passenger'
       $gem_path               = '/usr/lib/ruby/gems/1.8/gems'
